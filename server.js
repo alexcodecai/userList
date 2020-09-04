@@ -1,6 +1,7 @@
 const mongo = require("mongoose");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const port = 5000;
 
 const bodyParser = require("body-parser");
@@ -12,18 +13,29 @@ mongo
   .then(() => console.log("MongoDB Connected...."))
   .catch(err => console.log(err));
 
+app.use(cors())  
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 app.get("/api/users", (req, res) => {
   User.find((err, users) => {
     if (err) {
       console.log(err);
     }
-    console.log(users);
     res.json(users);
-  }).sort({ age: -1 });
+  });
 });
-app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(bodyParser.json());
 
 app.post("/api/users", (req, res) => {
+  console.log('-------------',req)
   const newUser = new User({
     admin: req.body.admin,
     firstname: req.body.firstname,
@@ -37,8 +49,8 @@ app.post("/api/users", (req, res) => {
 
 app.delete("/api/users/deleteone/:id", (req, res) => {
   User.findById(req.params.id)
-    .then(user => user.remove().then(() => res.json({ success: true })))
-    .catch(err => res.status(404).json({ success: false }));
+    .then(user => user.remove().then(() => res.json(user)))
+    .catch(err => res.status(404).json(err));
 });
 
 app.put("/api/users/update/:id", (req, res) => {
@@ -47,7 +59,7 @@ app.put("/api/users/update/:id", (req, res) => {
     .catch(err => res.json(`something wrong when update`, err));
 });
 
-app.get('/api/users/sort/:id', (req, res) => {
+app.get("/api/users/sort/:id", (req, res) => {
   let item = req.params.id.split("_");
   let param = item[0];
   let order = () => {
@@ -56,13 +68,13 @@ app.get('/api/users/sort/:id', (req, res) => {
     } else {
       return -1;
     }
-  }
-  User.aggregate([{ $sort : { [param]: order() } }], (err, users) => {
+  };
+  User.aggregate([{ $sort: { [param]: order() } }], (err, users) => {
     if (err) {
       console.log("An error occurs when sorting data", err);
     }
     res.json(users);
-  })
-})
+  });
+});
 
 app.listen(port, () => console.log(`server started on port ${port}`));

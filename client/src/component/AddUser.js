@@ -11,19 +11,21 @@ function AddUser({ history, addUser }) {
   let payload = {
     firstname: firstname,
     lastname: lastname,
-    age: age,
+    age: Number(age),
     sex: gender,
-    password: password
+    password: Number(password)
   };
-  console.log(addUser)
+  
   const handleSubmit = e => {
     e.preventDefault();
+    console.log(payload.firstname)
     addUser(payload);
     setFirstName("");
     setLastName("");
     setAge("");
     setGender("");
     setPassword("");
+    history.push("/");
   };
  console.log(payload)
   return (
@@ -39,8 +41,7 @@ function AddUser({ history, addUser }) {
           <input
             type="text"
             placeholder="Enter firstname"
-            name="firstname"
-            id="firstname"
+           
             onChange={e => setFirstName(e.target.value)}
             required
           />
@@ -107,4 +108,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapDispatchToProps)(AddUser);
+export default connect(null,mapDispatchToProps)(AddUser);

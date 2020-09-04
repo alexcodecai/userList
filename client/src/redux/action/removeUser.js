@@ -20,15 +20,16 @@ function requestFail(error) {
   };
 }
 
-export function addUser(payload) {
+export function removeUser(id) {
   return dispatch => {
     dispatch(requestStart());
     axios
-      .post("/api/users",payload)
+      .delete(`http://localhost:5000/api/users/deleteone/${id}`)
+      .then(() => {
+        return axios.get(`http://localhost:5000/api/users`)
+      })
       .then(response => {
-        console.log(response)
-       
-
+        dispatch(requestSuccess(response.data));
       })
       .catch(err => {
         dispatch(requestFail(err));

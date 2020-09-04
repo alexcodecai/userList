@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getUsers } from "../redux/action/users";
 import { getUsersSorted } from "../redux/action/usersSort";
+import { removeUser } from "../redux/action/removeUser";
 import UsersEntry from "./UsersEntry";
 import Pagination from "./Pagination";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
@@ -9,18 +10,23 @@ import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
 import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { Link } from "react-router-dom";
 
-const Users = ({ getUsers, users, getUsersSorted }) => {
+const Users = ({ getUsers, users, getUsersSorted, removeUser }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   useEffect(() => {
     getUsers();
   }, []);
-
+  console.log(users.data.length)
   const handleSort = (e, name) => {
     e.preventDefault();
     getUsersSorted(name);
   };
-  console.log(users);
+  
+  const handleRemove = (e, id) => {
+    e.preventDefault();
+    removeUser(id);
+  };
+
   const indexOfLastPost = currentPage * usersPerPage;
   const indexOfFirstPost = indexOfLastPost - usersPerPage;
   const currentUsers = users.data.slice(indexOfFirstPost, indexOfLastPost);
@@ -96,7 +102,11 @@ const Users = ({ getUsers, users, getUsersSorted }) => {
         </thead>
         <tbody>
           {currentUsers.map(user => (
-            <UsersEntry user={user} key={user._id} />
+            <UsersEntry
+              user={user}
+              key={user._id}
+              handleRemove={handleRemove}
+            />
           ))}
         </tbody>
       </table>
@@ -117,7 +127,7 @@ const Users = ({ getUsers, users, getUsersSorted }) => {
 
 const mapStateToProps = state => {
   return {
-    users: state.users,
+    users: state.users
   };
 };
 
@@ -128,6 +138,9 @@ const mapDispatchToProps = dispatch => {
     },
     getUsersSorted: name => {
       dispatch(getUsersSorted(name));
+    },
+    removeUser: id => {
+      dispatch(removeUser(id));
     }
   };
 };
