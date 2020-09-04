@@ -20,13 +20,15 @@ function requestFail(error) {
   };
 }
 
-export function getUsers() {
+export function addUser(payload) {
   return dispatch => {
     dispatch(requestStart());
     axios
-      .get("/api/users")
+      .post("/api/users",payload)
       .then(response => {
+        console.log(response.data)
         dispatch(requestSuccess(response.data));
+        console.log(response.data)
       })
       .catch(err => {
         dispatch(requestFail(err));

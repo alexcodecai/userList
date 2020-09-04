@@ -2,7 +2,7 @@ const mongo = require("mongoose");
 const express = require("express");
 const app = express();
 const port = 5000;
-const cors = require('cors')
+
 const bodyParser = require("body-parser");
 const db = require("./config/keys").mongoURI;
 
@@ -11,16 +11,6 @@ mongo
   .connect(db, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB Connected...."))
   .catch(err => console.log(err));
-
-app.use(cors());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
 
 app.get("/api/users", (req, res) => {
   User.find((err, users) => {
@@ -56,5 +46,23 @@ app.put("/api/users/update/:id", (req, res) => {
     .then(user => res.json(user))
     .catch(err => res.json(`something wrong when update`, err));
 });
+
+app.get('/api/users/sort/:id', (req, res) => {
+  let item = req.params.id.split("_");
+  let param = item[0];
+  let order = () => {
+    if (item[1] === "ascending") {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+  User.aggregate([{ $sort : { [param]: order() } }], (err, users) => {
+    if (err) {
+      console.log("An error occurs when sorting data", err);
+    }
+    res.json(users);
+  })
+})
 
 app.listen(port, () => console.log(`server started on port ${port}`));

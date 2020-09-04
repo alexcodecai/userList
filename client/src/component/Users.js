@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { getUsers } from "../redux/action/users";
+import { getUsersSorted } from "../redux/action/usersSort";
 import UsersEntry from "./UsersEntry";
-import Pagination from "./Pagination"
-import AddUser from "./AddUser";
+import Pagination from "./Pagination";
+import AddCircleIcon from "@material-ui/icons/AddCircle";
+import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
+import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
+import { Link } from "react-router-dom";
 
-const Users = ({ getUsers, users }) => {
+const Users = ({ getUsers, users, getUsersSorted }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(10);
   useEffect(() => {
     getUsers();
   }, []);
-  console.log(users.data.length);
 
-  const handlefirstName = () => {};
+  const handleSort = (e, name) => {
+    e.preventDefault();
+    getUsersSorted(name);
+  };
+  console.log(users);
   const indexOfLastPost = currentPage * usersPerPage;
   const indexOfFirstPost = indexOfLastPost - usersPerPage;
   const currentUsers = users.data.slice(indexOfFirstPost, indexOfLastPost);
@@ -25,10 +32,66 @@ const Users = ({ getUsers, users }) => {
           <tr>
             <th>Edit</th>
             <th>Delete</th>
-            <th onClick={handlefirstName}>firstName</th>
-            <th>lastName</th>
-            <th>sex</th>
-            <th>age</th>
+            <th>
+              <ArrowDropDownIcon
+                style={{ cursor: "pointer", color: "red" }}
+                onClick={e => {
+                  handleSort(e, "firstname");
+                }}
+              />
+              FirstName
+              <ArrowDropUpIcon
+                style={{ cursor: "pointer", color: "green" }}
+                onClick={e => {
+                  handleSort(e, "firstname_ascending");
+                }}
+              />
+            </th>
+            <th>
+              <ArrowDropDownIcon
+                style={{ cursor: "pointer", color: "red" }}
+                onClick={e => {
+                  handleSort(e, "lastname");
+                }}
+              />
+              LastName
+              <ArrowDropUpIcon
+                style={{ cursor: "pointer", color: "green" }}
+                onClick={e => {
+                  handleSort(e, "lastname_ascending");
+                }}
+              />
+            </th>
+            <th>
+              <ArrowDropDownIcon
+                style={{ cursor: "pointer", color: "red" }}
+                onClick={e => {
+                  handleSort(e, "sex");
+                }}
+              />
+              Sex
+              <ArrowDropUpIcon
+                style={{ cursor: "pointer", color: "green" }}
+                onClick={e => {
+                  handleSort(e, "sex_ascending");
+                }}
+              />
+            </th>
+            <th>
+              <ArrowDropDownIcon
+                style={{ cursor: "pointer", color: "red" }}
+                onClick={e => {
+                  handleSort(e, "age");
+                }}
+              />
+              Age
+              <ArrowDropUpIcon
+                style={{ cursor: "pointer", color: "green" }}
+                onClick={e => {
+                  handleSort(e, "age_ascending");
+                }}
+              />
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -42,8 +105,11 @@ const Users = ({ getUsers, users }) => {
         totalUsers={users.data.length}
         paginate={paginate}
       />
-      <div className ='adduser'>
-      <AddUser/>create new users
+      <div className="adduser">
+        <Link to="/Adduser">
+          create new user
+          <AddCircleIcon />
+        </Link>
       </div>
     </div>
   );
@@ -51,7 +117,7 @@ const Users = ({ getUsers, users }) => {
 
 const mapStateToProps = state => {
   return {
-    users: state.users
+    users: state.users,
   };
 };
 
@@ -59,6 +125,9 @@ const mapDispatchToProps = dispatch => {
   return {
     getUsers: () => {
       dispatch(getUsers());
+    },
+    getUsersSorted: name => {
+      dispatch(getUsersSorted(name));
     }
   };
 };
