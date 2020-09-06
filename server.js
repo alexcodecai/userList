@@ -13,7 +13,7 @@ mongo
   .then(() => console.log("MongoDB Connected...."))
   .catch(err => console.log(err));
 
-app.use(cors())  
+app.use(cors());
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -35,7 +35,7 @@ app.get("/api/users", (req, res) => {
 app.use(bodyParser.json());
 
 app.post("/api/users", (req, res) => {
-  console.log('-------------',req)
+  console.log("-------------", req);
   const newUser = new User({
     admin: req.body.admin,
     firstname: req.body.firstname,
@@ -59,6 +59,17 @@ app.put("/api/users/update/:id", (req, res) => {
     .catch(err => res.json(`something wrong when update`, err));
 });
 
+app.get("/api/users/serach/:id", (req,res) => {
+   let item = req.params.id;
+   User.aggregate( {$or: [ { $match : [ "$firstname" , item ] } ,{match :[ "$lastname" , item ] } ] } ,(err, users) => {
+    if (err) {
+      console.log("An error occurs when seatch users", err);
+    } 
+    res.json(users)
+  },)
+  // { $or: [ { $gt: [ "$qty", 250 ] }, { $lt: [ "$qty", 200 ] } ] }
+})
+
 app.get("/api/users/sort/:id", (req, res) => {
   let item = req.params.id.split("_");
   let param = item[0];
@@ -69,12 +80,20 @@ app.get("/api/users/sort/:id", (req, res) => {
       return -1;
     }
   };
-  User.aggregate([{ $sort: { [param]: order() } }], (err, users) => {
-    if (err) {
-      console.log("An error occurs when sorting data", err);
-    }
-    res.json(users);
-  });
+  User.aggregate(
+    [
+      {
+        $sort: { [param]: order() },
+        
+      }
+    ],
+    (err, users) => {
+      if (err) {
+        console.log("An error occurs when sorting data", err);
+      }
+      res.json(users);
+    },
+  );
 });
 
 app.listen(port, () => console.log(`server started on port ${port}`));

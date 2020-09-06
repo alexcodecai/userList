@@ -20,17 +20,14 @@ function requestFail(error) {
   };
 }
 
-export function getUsersSorted(name) {
+export function searchUsers(input) {
   return dispatch => {
     dispatch(requestStart());
-    let api = `/api/users`;
-    if (name !== "") {
-      api = `/api/users/sort/${name}`;
-    }
     axios
-      .get(api)
+      .get(`/api/users/serach/${input}`)
       .then(response => {
         dispatch(requestSuccess(response.data));
+        console.log(response.data)
       })
       .catch(err => {
         dispatch(requestFail(err));

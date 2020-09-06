@@ -6,13 +6,6 @@ function requestStart() {
   };
 }
 
-function requestSuccess(users) {
-  return {
-    type: "REQUEST_USERS_SUCCESS",
-    users
-  };
-}
-
 function requestFail(error) {
   return {
     type: "REQUEST_USERS_FAIL",
@@ -24,11 +17,9 @@ export function addUser(payload) {
   return dispatch => {
     dispatch(requestStart());
     axios
-      .post("/api/users",payload)
+      .post("/api/users", payload)
       .then(response => {
-        console.log(response)
-       
-
+        console.log(response);
       })
       .catch(err => {
         dispatch(requestFail(err));

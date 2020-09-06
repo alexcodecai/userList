@@ -20,13 +20,19 @@ function requestFail(error) {
   };
 }
 
-export function removeUser(id) {
+export function removeUser(id, sort) {
   return dispatch => {
     dispatch(requestStart());
     axios
       .delete(`http://localhost:5000/api/users/deleteone/${id}`)
       .then(() => {
-        return axios.get(`http://localhost:5000/api/users`)
+        console.log("removeuser in action is ", sort)
+        if (sort === "") {
+          return axios.get(`http://localhost:5000/api/users`)
+
+        }
+
+        return axios.get(`http://localhost:5000/api/users/sort/${sort}`)
       })
       .then(response => {
         dispatch(requestSuccess(response.data));
