@@ -26,13 +26,11 @@ export function removeUser(id, sort) {
     axios
       .delete(`http://localhost:5000/api/users/deleteone/${id}`)
       .then(() => {
-        console.log("removeuser in action is ", sort)
         if (sort === "") {
-          return axios.get(`http://localhost:5000/api/users`)
-
+          return axios.get(`http://localhost:5000/api/users`);
         }
 
-        return axios.get(`http://localhost:5000/api/users/sort/${sort}`)
+        return axios.get(`http://localhost:5000/api/users/sort/${sort}`);
       })
       .then(response => {
         dispatch(requestSuccess(response.data));

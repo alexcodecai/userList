@@ -13,7 +13,7 @@ class App extends Component {
           <Switch>
             <Route path="/" exact component={Users} />
             <Route path="/Adduser" exact component={AddUser} />
-            <Route path="/EditUser" exact component={EditUser} />
+            <Route path="/EditUser/:id" exact component={EditUser} />
           </Switch>
         </div>
       </Router>

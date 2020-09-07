@@ -2,36 +2,33 @@ import axios from "axios";
 
 function requestStart() {
   return {
-    type: "REQUEST_USERS_START"
+    type: "REQUEST_GETSINGLEUSER_START"
   };
 }
 
-function requestSuccess(users) {
+function requestSuccess(user) {
   return {
-    type: "REQUEST_USERS_SUCCESS",
-    users
+    type: "REQUEST_GETSINGLEUSER_SUCCESS",
+    user
   };
 }
 
 function requestFail(error) {
   return {
-    type: "REQUEST_USERS_FAIL",
+    type: "REQUEST_GETSINGLEUSER_FAIL",
     error
   };
 }
 
-export function getUsersSorted(name) {
+export function getSingleUser(id) {
   return dispatch => {
     dispatch(requestStart());
-    let api = `/api/users`;
-    if (name !== "") {
-      api = `/api/users/sort/${name}`;
-    }
-    console.log("get user sort is " + name)
     axios
-      .get(api)
+      .get(`/api/users/${id}`)
       .then(response => {
+        console.log(response.data)
         dispatch(requestSuccess(response.data));
+        console.log(response.data)
       })
       .catch(err => {
         dispatch(requestFail(err));

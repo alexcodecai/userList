@@ -161,3 +161,16 @@ input[type=text]:focus, input[type=password]:focus {
 .registerbtn:hover {
   opacity: 1;
 }
+
+.pagination {
+  list-style-type: none;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pagination a {
+  color: black;
+  float: left;
+  padding: 1px 3px;
+  text-decoration: none;
+}

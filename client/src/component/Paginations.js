@@ -1,6 +1,7 @@
 import React from 'react';
 
-const Pagination = ({ usersPerPage, totalUsers, paginate }) => {
+
+const Paginations = ({ usersPerPage, totalUsers, paginate,currentPage,changePage }) => {
   const pageNumbers = [];
 
   for (let i = 1; i <= Math.ceil(totalUsers / usersPerPage); i++) {
@@ -8,8 +9,14 @@ const Pagination = ({ usersPerPage, totalUsers, paginate }) => {
   }
 
   return (
+   
     <nav>
       <ul className='pagination'>
+        
+      {currentPage > 1 ?
+    <button onClick={() => changePage('back')}>perv page</button>
+   : null}
+        
         {pageNumbers.map(number => (
           <li key={number} className='page-item'>
             <a onClick={() => paginate(number)}  className='page-link'>
@@ -17,9 +24,12 @@ const Pagination = ({ usersPerPage, totalUsers, paginate }) => {
             </a>
           </li>
         ))}
+        {totalUsers -1 > currentPage * usersPerPage ?
+    <button onClick={() => changePage('next')}>next page</button>
+   : null}
       </ul>
     </nav>
   );
 };
 
-export default Pagination;
+export default Paginations;

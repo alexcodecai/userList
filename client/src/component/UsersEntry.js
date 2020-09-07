@@ -1,20 +1,11 @@
 import React from "react";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Link } from "react-router-dom";
-import EditUser from "./EditUser";
 const UserEntry = props => {
   return (
     <tr>
       <td>
-        <Link to={`/EditUser/${props.user._id}`} firstname={props.user.firstname} >
-          {/* <EditUser
-
-          
-            firstname={props.user.firstname}
-            lastname={props.user.lastname}
-            sex={props.user.sex}
-            age={props.user.age}
-          /> */}
+        <Link to={`/EditUser/${props.user._id}`}>
           edit
         </Link>
       </td>

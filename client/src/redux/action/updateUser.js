@@ -6,13 +6,6 @@ function requestStart() {
   };
 }
 
-function requestSuccess(users) {
-  return {
-    type: "REQUEST_USERS_SUCCESS",
-    users
-  };
-}
-
 function requestFail(error) {
   return {
     type: "REQUEST_USERS_FAIL",
@@ -20,18 +13,13 @@ function requestFail(error) {
   };
 }
 
-export function getUsersSorted(name) {
+export function updateUser(id,payload) {
   return dispatch => {
     dispatch(requestStart());
-    let api = `/api/users`;
-    if (name !== "") {
-      api = `/api/users/sort/${name}`;
-    }
-    console.log("get user sort is " + name)
     axios
-      .get(api)
+      .put(`/api/users/update/${id}`, payload)
       .then(response => {
-        dispatch(requestSuccess(response.data));
+        console.log(response);
       })
       .catch(err => {
         dispatch(requestFail(err));

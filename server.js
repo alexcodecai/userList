@@ -32,10 +32,21 @@ app.get("/api/users", (req, res) => {
   });
 });
 
+app.get("/api/users/:id", (req, res) => {
+  let id = req.params.id
+  User.find({_id: id}, (err, users) => {
+    if (err) {
+      console.log("An error occurred when getting one user", err);
+    }
+    console.log(req.params.id);
+    res.json(users);
+  })
+});
+
 app.use(bodyParser.json());
 
 app.post("/api/users", (req, res) => {
-  console.log("-------------", req);
+  console.log("-------------", req.body);
   const newUser = new User({
     admin: req.body.admin,
     firstname: req.body.firstname,
@@ -54,21 +65,23 @@ app.delete("/api/users/deleteone/:id", (req, res) => {
 });
 
 app.put("/api/users/update/:id", (req, res) => {
+  console.log("-------------", req.body)
   User.findByIdAndUpdate(req.params.id, req.body)
     .then(user => res.json(user))
     .catch(err => res.json(`something wrong when update`, err));
 });
 
-app.get("/api/users/serach/:id", (req,res) => {
-   let item = req.params.id;
-   User.aggregate( {$or: [ { $match : [ "$firstname" , item ] } ,{match :[ "$lastname" , item ] } ] } ,(err, users) => {
-    if (err) {
-      console.log("An error occurs when seatch users", err);
-    } 
-    res.json(users)
-  },)
+app.get("/api/users/serach/:id", (req, res) => {
+  let item = req.params.id;
+
+  //  User.aggregate( { { $match : [ "$firstname" , item ] }  } ,(err, users) => {
+  //   if (err) {
+  //     console.log("An error occurs when seatch users", err);
+  //   }
+  //   res.json(users)
+  // },)
   // { $or: [ { $gt: [ "$qty", 250 ] }, { $lt: [ "$qty", 200 ] } ] }
-})
+});
 
 app.get("/api/users/sort/:id", (req, res) => {
   let item = req.params.id.split("_");
@@ -83,8 +96,7 @@ app.get("/api/users/sort/:id", (req, res) => {
   User.aggregate(
     [
       {
-        $sort: { [param]: order() },
-        
+        $sort: { [param]: order() }
       }
     ],
     (err, users) => {
@@ -92,7 +104,7 @@ app.get("/api/users/sort/:id", (req, res) => {
         console.log("An error occurs when sorting data", err);
       }
       res.json(users);
-    },
+    }
   );
 });
 

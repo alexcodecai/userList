@@ -10,7 +10,7 @@ mongo
 let array = ["M",'F','F'] 
 let sex = array[Math.ceil(Math.random() * array.length)];
 const seedUserData = () => {
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 100; i++) {
     const name = faker.name.firstName()
     const dates = faker.name.lastName()
     const age = faker.random.number(80);  

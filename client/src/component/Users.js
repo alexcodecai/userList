@@ -5,10 +5,8 @@ import { getUsersSorted } from "../redux/action/usersSort";
 import { removeUser } from "../redux/action/removeUser";
 import { searchUsers } from "../redux/action/searchUser";
 import UsersEntry from "./UsersEntry";
-import Pagination from "./Pagination";
+import Paginations from "./Paginations";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
-import ArrowDropDownIcon from "@material-ui/icons/ArrowDropDown";
-import ArrowDropUpIcon from "@material-ui/icons/ArrowDropUp";
 import { Link } from "react-router-dom";
 
 const Users = ({
@@ -22,17 +20,32 @@ const Users = ({
   const [usersPerPage] = useState(10);
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState("");
+  const [first, setFirst] = useState(true);
 
   useEffect(() => {
     getUsers();
   }, []);
 
-  console.log(searchInput);
-
   const handleSort = (e, name) => {
     e.preventDefault();
+    console.log("sort before is " + sort);
     getSort(name);
-    getUsersSorted(sort);
+    console.log("sort after is " + sort);
+    if (first) {
+      getUsersSorted(name);
+
+      if (name === "firstname") {
+        setSort("firstname_ascending");
+      } else if (name === "lastname") {
+        setSort("lastname_ascending");
+      } else if (name === "sex") {
+        setSort("sex_ascending");
+      } else if (name === "age") {
+        setSort("age_ascending");
+      }
+    } else {
+      getUsersSorted(sort);
+    }
   };
 
   const handleRemove = (e, id) => {
@@ -50,16 +63,37 @@ const Users = ({
   };
 
   let getSort = name => {
+    setFirst(false);
+
     switch (name) {
       case "firstname":
+        console.log("i am in", sort);
+        if (
+          sort !== "firstname" &&
+          sort !== "firstname_ascending" &&
+          sort !== ""
+        ) {
+          setSort("");
+        }
+
         if (sort === "") {
+          console.log("empty in ", sort);
           setSort("firstname");
+          console.log("after set ", sort);
         } else if (sort === "firstname") {
           setSort("firstname_ascending");
         } else {
           setSort("");
         }
+        break;
       case "lastname":
+          if (
+            sort !== "lastname" &&
+            sort !== "lastname_ascending" &&
+            sort !== ""
+          ) {
+            setSort("");
+          }
         if (sort === "") {
           setSort("lastname");
         } else if (sort === "lastname") {
@@ -67,7 +101,15 @@ const Users = ({
         } else {
           setSort("");
         }
+        break;
       case "sex":
+          if (
+            sort !== "sex" &&
+            sort !== "sex_ascending" &&
+            sort !== ""
+          ) {
+            setSort("");
+          }
         if (sort === "") {
           setSort("sex");
         } else if (sort === "sex") {
@@ -75,7 +117,15 @@ const Users = ({
         } else {
           setSort("");
         }
+        break;
       case "age":
+          if (
+            sort !== "age" &&
+            sort !== "age_ascending" &&
+            sort !== ""
+          ) {
+            setSort("");
+          }
         if (sort === "") {
           setSort("age");
         } else if (sort === "age") {
@@ -86,12 +136,20 @@ const Users = ({
         break;
     }
   };
-
+  const changePage = direction => {
+    if (direction === "back") {
+      setCurrentPage(currentPage - 1);
+    } else if (direction === "next") {
+      setCurrentPage(currentPage + 1);
+    }
+  };
   const indexOfLastPost = currentPage * usersPerPage;
   const indexOfFirstPost = indexOfLastPost - usersPerPage;
   const currentUsers = users.data.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = pageNumber => setCurrentPage(pageNumber);
-
+  if (users.data.length === 0) {
+    return <p>Loading data...</p>;
+  }
   return (
     <div className="box">
       <div>
@@ -154,10 +212,12 @@ const Users = ({
           ))}
         </tbody>
       </table>
-      <Pagination
+      <Paginations
         usersPerPage={usersPerPage}
         totalUsers={users.data.length}
         paginate={paginate}
+        currentPage={currentPage}
+        changePage={changePage}
       />
       <div className="adduser">
         <Link to="/Adduser">
