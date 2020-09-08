@@ -23,14 +23,32 @@ function requestFail(error) {
 export function searchUsers(input) {
   return dispatch => {
     dispatch(requestStart());
+    let api = '/api/users'
+    if (input !== "") {
+      api = `/api/users/serach/${input}`;
+    }
     axios
-      .get(`/api/users/serach/${input}`)
+      .get(api)
       .then(response => {
         dispatch(requestSuccess(response.data));
-        console.log(response.data)
       })
       .catch(err => {
         dispatch(requestFail(err));
       });
   };
 }
+
+
+
+// export function searchUsers(sort, name) {
+//   return (dispatch, getState) => {
+//     dispatch(requestStart());
+//     axios.get(`/api/users/search/${sort}-${name}`)
+//       .then(response => {
+//         dispatch(requestSuccess(response.data));
+//       })
+//       .catch(err => {
+//         dispatch(requestFail(err));
+//       });
+//   };
+// }

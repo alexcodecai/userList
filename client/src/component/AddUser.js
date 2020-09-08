@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { addUser } from "../redux/action/addUser";
 
-function AddUser({ history, addUser }) {
+function AddUser({ history, addUser,users}) {
   const [firstname, setFirstName] = useState("");
   const [lastname, setLastName] = useState("");
   const [age, setAge] = useState("");
@@ -13,49 +13,56 @@ function AddUser({ history, addUser }) {
   const [ageValid, setAgeValid] = useState(false);
   const [genderValid, setGenderValid] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
-  // const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [submitValid,setSubmitValid] = useState(false);
+  
   let payload = {
     firstname: firstname.charAt(0).toUpperCase() + firstname.slice(1),
     lastname: lastname.charAt(0).toUpperCase() + lastname.slice(1),
     age: Number(age),
-    sex: gender.charAt(0).toUpperCase() + lastname.slice(1),
+    sex: gender.charAt(0).toUpperCase(),
     password: Number(password)
   };
+
+  console.log('vaild', firstNameValid)
+  console.log(passwordValid)
+  console.log('sumbit', submitValid)
   const handleFirstName = (e) => {
     setFirstName(e.target.value);
-    let condition = (e.target.value.length < 8 || e.target.value.length > 2)
+    let condition = /^(?=.{1,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/.test(firstname);
     setFirstNameValid(condition ? true : false);
-   
+    setSubmitValid((condition && lastNameValid && genderValid && ageValid && passwordValid) ? true : false);
   }
   const handleLastName = (e) => {
     setLastName(e.target.value);
-    let condition = (e.target.value.length < 8 || e.target.value.length > 2)
+    let condition = /^(?=.{1,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/.test(lastname);
     setLastNameValid(condition ? true : false);
-   
+    setSubmitValid((firstNameValid && condition&& genderValid && ageValid && passwordValid) ? true : false);
   }
 
   const handleGender = (e) => {
     setGender(e.target.value);
-    let condition = e.target.value === "M" || e.target.value === "F"
+    let condition = e.target.value === "M" || e.target.value === "F";
     setGenderValid(condition ? true : false);
-  
+    setSubmitValid((firstNameValid && lastNameValid && condition && ageValid && passwordValid) ? true : false);
   }
   
   const handleAge = (e) => {
     setAge(e.target.value);
-    let condition = (e.target.value < 100 ) 
+    let condition = Number(e.target.value) >= 0 && Number(e.target.value) <= 100;
     setAgeValid(condition ? true : false);
-    
+    setSubmitValid((firstNameValid && lastNameValid && genderValid && condition && passwordValid) ? true : false);
   }
   const handlePassword = (e) => {
     setPassword(e.target.value);
-    let condition = (e.target.value < 9) 
+    let condition = /^(?=.{7,})/.test(password);
     setPasswordValid(condition ? true : false);
-   
+    setSubmitValid((firstNameValid && lastNameValid && genderValid && ageValid && condition) ? true : false);
   }
 
   const handleSubmit = e => {
     e.preventDefault();
+  
+    
       addUser(payload);
       setFirstName("");
       setLastName("");
@@ -117,7 +124,7 @@ function AddUser({ history, addUser }) {
             onChange={handleAge}
             required
           />
-          {!ageValid && <p style={{color: "green"}}>Please dont dream.</p>}
+          {!ageValid && <p style={{color: "green"}}>Please be real.</p>}
           <label>Password</label>
           <input
             type="password"
@@ -128,7 +135,7 @@ function AddUser({ history, addUser }) {
             required
           />
            {!passwordValid && <p style={{color: "green"}}>password cant be longer than 8</p>}
-          <button type="submit" className="registerbtn" >
+          <button type="submit" className="registerbtn" disabled ={!submitValid} >
             Register New User
           </button>
           <button className="registerbtn" onClick={() => history.push("/")}>
@@ -136,8 +143,14 @@ function AddUser({ history, addUser }) {
           </button>
         </div>
       </form>
+      {users.error && <p>Whoops, new user is not added into our system...</p>}
     </div>
   );
+}
+const mapStateToProps = (state) => {
+  return {
+    users: state.users
+  };
 }
 
 const mapDispatchToProps = dispatch => {
@@ -148,4 +161,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(null, mapDispatchToProps)(AddUser);
+export default connect(mapStateToProps, mapDispatchToProps)(AddUser);

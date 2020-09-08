@@ -9,6 +9,17 @@ import Paginations from "./Paginations";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
 import { Link } from "react-router-dom";
 
+
+const debounceCreator = () => {
+  let ref;
+  return (func, timeout, val) => {
+      clearTimeout(ref);
+      ref = setTimeout(() => func(val), timeout);
+  };
+};
+
+const getSearchHelper = debounceCreator();
+
 const Users = ({
   getUsers,
   users,
@@ -21,53 +32,47 @@ const Users = ({
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState("");
   const [first, setFirst] = useState(true);
+  const [name, setName] = useState("");
+  
+
+  const indexOfLastPost = currentPage * usersPerPage;
+  const indexOfFirstPost = indexOfLastPost - usersPerPage;
+  const currentUsers = users.data.slice(indexOfFirstPost, indexOfLastPost);
+  const paginate = pageNumber => setCurrentPage(pageNumber);
 
   useEffect(() => {
     getUsers();
   }, []);
 
+  useEffect(() =>{
+    getUsersSorted(sort)
+  }, [sort])
+
+  let condition = {
+    sort:sort,
+    searchInput: searchInput,
+  }
+
   const handleSort = (e, name) => {
     e.preventDefault();
-    console.log("sort before is " + sort);
     getSort(name);
-    console.log("sort after is " + sort);
-    if (first) {
-      getUsersSorted(name);
-
-      if (name === "firstname") {
-        setSort("firstname_ascending");
-      } else if (name === "lastname") {
-        setSort("lastname_ascending");
-      } else if (name === "sex") {
-        setSort("sex_ascending");
-      } else if (name === "age") {
-        setSort("age_ascending");
-      }
-    } else {
-      getUsersSorted(sort);
-    }
+    setName(name);
   };
 
   const handleRemove = (e, id) => {
     e.preventDefault();
-    removeUser(id, sort);
+    removeUser(condition, id);
   };
-
-  const handleSearchInput = e => {
+  
+  const handleSearch = e => {
     setSearchInput(e.target.value);
-  };
-
-  const handleSearch = (e, Input) => {
-    e.preventDefault();
-    searchUsers(Input);
-  };
-
+    getSearchHelper(searchUsers, 600, e.target.value.trim());
+  }
+  //sorting
   let getSort = name => {
     setFirst(false);
-
     switch (name) {
       case "firstname":
-        console.log("i am in", sort);
         if (
           sort !== "firstname" &&
           sort !== "firstname_ascending" &&
@@ -75,11 +80,8 @@ const Users = ({
         ) {
           setSort("");
         }
-
         if (sort === "") {
-          console.log("empty in ", sort);
           setSort("firstname");
-          console.log("after set ", sort);
         } else if (sort === "firstname") {
           setSort("firstname_ascending");
         } else {
@@ -136,6 +138,8 @@ const Users = ({
         break;
     }
   };
+
+  // pagination
   const changePage = direction => {
     if (direction === "back") {
       setCurrentPage(currentPage - 1);
@@ -143,25 +147,22 @@ const Users = ({
       setCurrentPage(currentPage + 1);
     }
   };
-  const indexOfLastPost = currentPage * usersPerPage;
-  const indexOfFirstPost = indexOfLastPost - usersPerPage;
-  const currentUsers = users.data.slice(indexOfFirstPost, indexOfLastPost);
-  const paginate = pageNumber => setCurrentPage(pageNumber);
-  if (users.data.length === 0) {
-    return <p>Loading data...</p>;
-  }
+
+
   return (
     <div className="box">
       <div>
-        <form onSubmit={e => handleSearch(e, searchInput)}>
+        <form onSubmit={e => e.preventDefault()}>
           <h1>Search Users</h1>
           <input
             type="text"
             placeholder="Enter anything you want search "
-            onChange={handleSearchInput}
+            value = {searchInput}
+            onChange={handleSearch}
+            required
           ></input>
-          <button type="submit">GO!</button>
         </form>
+        {(users.data.length === 0) && (<p style={{ color: "red" }}>No such a user exist in our database</p>)}
       </div>
       <table className="content-table">
         <thead>
@@ -208,6 +209,7 @@ const Users = ({
               user={user}
               key={user._id}
               handleRemove={handleRemove}
+
             />
           ))}
         </tbody>
@@ -240,15 +242,16 @@ const mapDispatchToProps = dispatch => {
     getUsers: () => {
       dispatch(getUsers());
     },
-    getUsersSorted: name => {
-      dispatch(getUsersSorted(name));
+    getUsersSorted: (name,condition) => {
+      dispatch(getUsersSorted(name, condition));
     },
-    removeUser: (id, sort) => {
-      dispatch(removeUser(id, sort));
+    removeUser: (condition, id) => {
+      dispatch(removeUser(condition, id));
     },
-    searchUsers: input => {
-      dispatch(searchUsers(input));
+    searchUsers: (input,condition) => {
+      dispatch(searchUsers(input, condition));
     }
+
   };
 };
 

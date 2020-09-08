@@ -20,20 +20,33 @@ function requestFail(error) {
   };
 }
 
-export function removeUser(id, sort) {
+export function removeUser(condition, id) {
+  let sort = condition.sort;
+  let searchInput = condition.searchInput
   return dispatch => {
     dispatch(requestStart());
     axios
       .delete(`http://localhost:5000/api/users/deleteone/${id}`)
       .then(() => {
-        if (sort === "") {
-          return axios.get(`http://localhost:5000/api/users`);
+        if (sort === "" && searchInput === "") {
+          axios.get('/api/users')
+            .then((response) => {
+              dispatch(requestSuccess(response.data))
+            })
         }
-
-        return axios.get(`http://localhost:5000/api/users/sort/${sort}`);
-      })
-      .then(response => {
-        dispatch(requestSuccess(response.data));
+        else if (searchInput === ""){
+          axios.get(`/api/users/sort/${sort}`)
+          .then((response) => {
+            dispatch(requestSuccess(response.data))
+          })
+        } else if (sort === "") {
+          axios.get(`/api/users/serach/${searchInput}`)
+          .then((response) => {
+            dispatch(requestSuccess(response.data))
+          })
+        } else {
+          axios.get(`api/users/serach/${condition}`)
+        }
       })
       .catch(err => {
         dispatch(requestFail(err));

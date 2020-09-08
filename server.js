@@ -73,14 +73,14 @@ app.put("/api/users/update/:id", (req, res) => {
 
 app.get("/api/users/serach/:id", (req, res) => {
   let item = req.params.id;
-
-  //  User.aggregate( { { $match : [ "$firstname" , item ] }  } ,(err, users) => {
-  //   if (err) {
-  //     console.log("An error occurs when seatch users", err);
-  //   }
-  //   res.json(users)
-  // },)
-  // { $or: [ { $gt: [ "$qty", 250 ] }, { $lt: [ "$qty", 200 ] } ] }
+  let age = Number(req.params.id)
+   User.aggregate( ( [ { $match: { $or: [{ firstname: item }, { lastname: item }, { age: age }, { sex: item }] } } ]),(err, users) => {
+    if (err) {
+      console.log("An error occurs when seatch users", err);
+    }
+    res.json(users)
+  },)
+ 
 });
 
 app.get("/api/users/sort/:id", (req, res) => {
@@ -107,5 +107,100 @@ app.get("/api/users/sort/:id", (req, res) => {
     }
   );
 });
+
+
+// app.get("api/users/serach/:condition" ,(req, res) =>{
+//   const array = req.params.condition.split("-");
+//   const sort = arr[0];
+//   const search = arr[1];
+//   if ()
+
+// })
+
+
+
+
+
+
+
+// app.get('/api/users/search/:condition', (req, res) => {
+//   const arr = req.params.condition.split("-");
+//   const sort = arr[0];
+//   const userName = arr[1];
+//   console.log(sort);
+//   console.log(userName)
+//   // when there is userName
+//   let sortArray = (array, sort) => {
+//     if (sort === "") {
+//       return array;
+//     }
+//     let param = sort.split("_")[0];
+//     let order = sort.split("_")[1];
+
+//     if (param === "age") {
+//       if (order === "ascending") {
+//         array.sort(function(a, b){
+//           return a.age - b.age;
+//         })
+//       } else {
+//         array.sort(function(a, b){
+//           return b.age - a.age;
+//         })
+//       }
+//     } else {
+//       if (order === "ascending") {
+//         array.sort(function(a,b){
+//           return a[param].localeCompare(b[param]);
+//         })
+//       } else {
+//         array.sort(function(a,b){
+//           return b[param].localeCompare(a[param]);
+//         })
+//       }
+//     }
+//     return array;
+//   }
+
+//   // When there is no userName
+//   if (!userName) {
+//     console.log('no',sort);
+//     console.log(userName)
+//     if (sort === "") {
+//       User.find({})
+//       .then(user => res.status(200).json(user))
+//       .catch(err => res.status(404).json(err))
+//     } else {
+//       let param = sort.split("_")[0];
+//       let order = sort.split("_")[1];
+//       let getOrder = () => {
+//         if (order === "ascending") {
+//           return 1;
+//         } else {
+//           return -1;
+//         }
+//       }
+//       User.aggregate([{ $sort: { [param]: getOrder() } }])
+//         .then(users => res.status(200).json(users))
+//         .catch(err => res.status(404).json(err))
+//     }
+//   } else {
+//     const regex = new RegExp("^" + userName, 'gi');
+
+//     User.find({
+//       '$or': [
+//         { 'firstname': regex },
+//         { 'lastname': regex }
+//       ]})
+//       .exec()
+//       .then(users => res.status(200).json(sortArray(users, sort)))
+//       .catch(err => res.status(404).json(err))
+//   }
+// });
+
+
+
+
+
+
 
 app.listen(port, () => console.log(`server started on port ${port}`));

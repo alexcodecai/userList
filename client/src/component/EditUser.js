@@ -10,15 +10,17 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
   const [gender, setGender] = useState(null);
   const [password, setPassword] = useState(null);
   const [rePassword, setRepassword] = useState(null);
+
   const [firstNameValid, setFirstNameValid] = useState(true);
   const [lastNameValid, setLastNameValid] = useState(true);
   const [ageValid, setAgeValid] = useState(true);
   const [genderValid, setGenderValid] = useState(true);
   const [passwordValid, setPasswordValid] = useState(true);
   const [repasswordValid, setrePasswordValid] = useState(true);
+
   const [submitValid, setSubmitVaild] = useState(false);
-  const [submitDisable, setsubmitDisable] = useState(false);
-  const [isEqual, setisEqual] = useState(true);
+  const [isChange, setisChange] = useState(false);
+  const [submitDisable, setSubmitDisable] = useState(true);
 
   useEffect(() => {
     getSingleUser(match.params.id);
@@ -34,6 +36,14 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (submitValid && isChange) {
+      setSubmitDisable(false);
+    } else {
+      setSubmitDisable(true);
+    }
+  }, [submitValid, isChange]);
+
   let payload = {
     firstname: firstname,
     lastname: lastname,
@@ -41,24 +51,24 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
     sex: gender,
     password: password
   };
-  console.log(firstname);
- // console.log(user[0].firstname);
-  console.log(isEqual)
-  // console.log(firstNameValid);
-  // console.log(lastNameValid);
-  // console.log(ageValid);
-  // console.log(genderValid);
-  // console.log(ageValid);
-  // console.log(passwordValid);
-  // console.log(repasswordValid);
-
+  console.log("ischange", isChange)
   const handleFirstName = e => {
     setFirstName(e.target.value);
-    let condition = /^(?=.{1,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/.test(firstname);
+    console.log(e.target.value);
+    let condition = /^(?=.{1,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/.test(
+      e.target.value
+    );
     setFirstNameValid(condition ? true : false);
-    if (firstname !== e.target.value) {
-      setisEqual(false);
+    if (e.target.value !== user[0].firstname) {
+      setisChange(true);
+    } else {
+      setisChange(false);
     }
+    setSubmitVaild(
+      condition && lastNameValid && genderValid && ageValid && passwordValid
+        ? true
+        : false
+    );
   };
 
   const handleLastName = e => {
@@ -67,12 +77,33 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
       lastname
     );
     setLastNameValid(condition ? true : false);
+    if (e.target.value !== user[0].lastname) {
+      setisChange(true);
+    } else {
+      setisChange(false);
+    }
+    setSubmitVaild(
+      firstNameValid && condition && genderValid && ageValid && passwordValid
+        ? true
+        : false
+    );
   };
 
   const handleGender = e => {
     setGender(e.target.value);
     let condition = e.target.value === "M" || e.target.value === "F";
     setGenderValid(condition ? true : false);
+    if (e.target.value !== user[0].sex) {
+      console.log(user[0].sex)
+      setisChange(true);
+    } else {
+      setisChange(false);
+    }
+    setSubmitVaild(
+      firstNameValid && lastNameValid && condition && ageValid && passwordValid
+        ? true
+        : false
+    );
   };
 
   const handleAge = e => {
@@ -80,6 +111,20 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
     let condition =
       Number(e.target.value) >= 0 && Number(e.target.value) <= 100;
     setAgeValid(condition ? true : false);
+    if (Number(e.target.value) !== user[0].age) {
+      setisChange(true);
+    } else {
+      setisChange(false);
+    }
+    setSubmitVaild(
+      firstNameValid &&
+        lastNameValid &&
+        genderValid &&
+        condition &&
+        passwordValid
+        ? true
+        : false
+    );
   };
   const handlePassword = e => {
     setPassword(e.target.value);
@@ -97,25 +142,16 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (
-      firstNameValid &&
-      lastNameValid &&
-      ageValid &&
-      genderValid &&
-      passwordValid &&
-      repasswordValid
-    ) {
-      setSubmitVaild(true);
-      setsubmitDisable(true);
-      updateUser(match.params.id, payload);
-      setFirstName(null);
-      setLastName(null);
-      setAge(null);
-      setGender(null);
-      setPassword(null);
-      history.push("/");
-    }
+
+    updateUser(match.params.id, payload);
+    setFirstName(null);
+    setLastName(null);
+    setAge(null);
+    setGender(null);
+    setPassword(null);
+    history.push("/");
   };
+
   if (user[0] === undefined) {
     return <p>loading data</p>;
   }
@@ -217,9 +253,7 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
             >
               update Exist User
             </button>
-            {isEqual && (
-              <p>please do not submit user information!!</p>
-            )}
+            {!isChange && <p>please do not submit same user information</p>}
             <button className="registerbtn" onClick={() => history.push("/")}>
               back to user page
             </button>

@@ -27,7 +27,6 @@ export function getUsersSorted(name) {
     if (name !== "") {
       api = `/api/users/sort/${name}`;
     }
-    console.log("get user sort is " + name)
     axios
       .get(api)
       .then(response => {
@@ -38,3 +37,5 @@ export function getUsersSorted(name) {
       });
   };
 }
+
+

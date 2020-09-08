@@ -1,12 +1,13 @@
 import React from "react";
 import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import { Link } from "react-router-dom";
+import EditIcon from '@material-ui/icons/Edit';
 const UserEntry = props => {
   return (
     <tr>
       <td>
         <Link to={`/EditUser/${props.user._id}`}>
-          edit
+        <EditIcon/>edit
         </Link>
       </td>
       <td className="deletebtn">
