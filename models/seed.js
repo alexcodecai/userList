@@ -19,7 +19,7 @@ const seedUserData = () => {
       admin:true,
       firstname: name,
       lastname: dates, 
-      sex: 'M',
+      sex: 'F',
       age: age,
       password:password
     }, (err, success) => {

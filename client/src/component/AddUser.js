@@ -23,9 +23,7 @@ function AddUser({ history, addUser,users}) {
     password: Number(password)
   };
 
-  console.log('vaild', firstNameValid)
-  console.log(passwordValid)
-  console.log('sumbit', submitValid)
+
   const handleFirstName = (e) => {
     setFirstName(e.target.value);
     let condition = /^(?=.{1,40}$)[a-zA-Z]+(?:[-'\s][a-zA-Z]+)*$/.test(firstname);

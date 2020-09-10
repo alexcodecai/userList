@@ -143,13 +143,14 @@ const EditUser = ({ getSingleUser, user, match, history, updateUser }) => {
   const handleSubmit = e => {
     e.preventDefault();
 
-    updateUser(match.params.id, payload);
+    updateUser(match.params.id, payload, history);
     setFirstName(null);
     setLastName(null);
     setAge(null);
     setGender(null);
     setPassword(null);
-    history.push("/");
+   //history.push("/");
+  
   };
 
   if (user[0] === undefined) {
@@ -275,8 +276,8 @@ const mapDispatchToProps = dispatch => {
     getSingleUser: id => {
       dispatch(getSingleUser(id));
     },
-    updateUser: (id, payload) => {
-      dispatch(updateUser(id, payload));
+    updateUser: (id, payload, history) => {
+      dispatch(updateUser(id, payload, history));
     }
   };
 };

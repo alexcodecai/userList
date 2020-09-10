@@ -13,13 +13,13 @@ function requestFail(error) {
   };
 }
 
-export function updateUser(id,payload) {
+export function updateUser(id, payload, history) {
   return dispatch => {
     dispatch(requestStart());
     axios
       .put(`/api/users/update/${id}`, payload)
-      .then(response => {
-        console.log(response);
+      .then(response =>{
+          history.push('/')
       })
       .catch(err => {
         dispatch(requestFail(err));

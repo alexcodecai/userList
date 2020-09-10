@@ -26,9 +26,7 @@ export function getSingleUser(id) {
     axios
       .get(`/api/users/${id}`)
       .then(response => {
-        console.log(response.data)
         dispatch(requestSuccess(response.data));
-        console.log(response.data)
       })
       .catch(err => {
         dispatch(requestFail(err));

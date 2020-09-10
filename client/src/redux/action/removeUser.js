@@ -45,9 +45,12 @@ export function removeUser(condition, id) {
             dispatch(requestSuccess(response.data))
           })
         } else {
-          axios.get(`api/users/serach/${condition}`)
+          axios.get(`/api/users/combine/${sort}-${searchInput}`)
+          .then((response) => {
+            dispatch(requestSuccess(response.data))
+          })
         }
-      })
+       })
       .catch(err => {
         dispatch(requestFail(err));
       });
